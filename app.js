@@ -1,14 +1,15 @@
 const qwerty = document.getElementById('qwerty');
 const phrase = document.getElementById('phrase');
-const missed = 0;
+let missed = 0;
 const btnReset = document.querySelector('.btn__reset');
 const keyboardBtns = document.querySelectorAll('.keyrow button');
 const heartsImg = document.querySelectorAll('.tries img');
 
-
+//Starts the game. Hides the start screen when button is clicked.//
 btnReset.addEventListener('click', () => {
     overlay.style.display = 'none';
 });
+
 
 const phrases = [
     'A diamond is forever',
@@ -21,13 +22,15 @@ const phrases = [
     'No pain no gain'
 ];
 
+//This function picks a phrase from the array and returns it split into an aray of characters.//
 function getRandomPhraseAsArray(arr) {
     const randomString = arr[Math.floor(Math.random() * arr.length)];
     const newStringSplit = randomString.split('');
     return newStringSplit;
   }
-//   getRandomPhraseAsArray(phrases);
 
+//This function append each item from the new array into a li element in the #phrase ul
+//only when the character is not a space, and then gives it the class 'letter'. Otherwise the character receives the class 'space'. 
 function addPhraseToDisplay(arr) {
     for (i= 0; i < arr.length; i++ ) {
        const character = arr[i];
@@ -47,19 +50,51 @@ const phraseArray = getRandomPhraseAsArray(phrases);
 addPhraseToDisplay(phraseArray);
 
 
+//This function gets all of the elements with a class of 'letter', loops over them,  and check if they match the letter in the button the player has chosen.
+//If a match wasn’t found, the function return null.//
 function checkLetter(playerGuess) {
-    const letters = document.getElementsByClassName('letter');
+    const letters = document.getElementsByClassName('.letter');
     let correctAnswer = null;
+
     for (i= 0; i < letters.length; i++)
         if (playerGuess === letters[i].innerText.toLowerCase()) {
-            letters[i].className = 'show';
+            letters[i].className = 'letter show';
             correctAnswer = letters[i].innerText;
         } 
     return correctAnswer
 }
 
 
-for (i= 0; i< keyboardBtns.length; i++) {
+//This function checks whether the game has been won or lost by check if the number of letters with class “show” 
+//is equal to the number of letters with class “letters”. //
+function checkWin() {
+    let numShow = document.querySelectorAll('.show').length;
+    let numLetter = document.querySelectorAll('.letter').length;
+    const title = document.querySelector('.title');
+    const winingPhrase = document.createElement('h2');
+    winingPhrase.textContent = `The phrase was "${phraseArray.join('')}."`
+
+    if (numShow === numLetter) {
+        
+        overlay.style.display = '';
+        overlay.className = 'win';
+        title.textContent = 'Congrats! You win';
+        btnReset.innerText = 'Play again';
+        overlay.appendChild(winingPhrase);
+    }
+    if (missed >= 5) {
+        overlay.style.display = '';
+        overlay.className = 'lose';
+        title.textContent = 'Bummer! You lose';
+        btnReset.innerText = 'Try again';
+        overlay.appendChild(winingPhrase);
+    }
+}
+
+
+//This event handler listen only to button events from the keyboard. When a player chooses a letter, 
+//adds the “chosen” class to that button so the same letter can’t be chosen twice.//
+for (i= 0; i < keyboardBtns.length; i++) {
     keyboardBtns[i].addEventListener('click', (e) => {
         let playerGuess = e.target.innerText;
         checkLetter(playerGuess);
@@ -67,10 +102,11 @@ for (i= 0; i< keyboardBtns.length; i++) {
         e.target.disabled = 'true';
         let letterFound = checkLetter(playerGuess);
         
-        if (checkLetter === null) {
+        if (letterFound === null) {
             heartsImg[missed].src= 'images/lostHeart.png';
             missed++;
         }
-        // checkWin();
+        checkWin();
     });
 }
+
