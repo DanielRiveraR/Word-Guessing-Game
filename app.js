@@ -63,8 +63,7 @@ function checkLetter(playerGuess) {
     return correctAnswer;
 }
 
-let winingPhrase = document.createElement('h2');
-winingPhrase.textContent = `The phrase was "${phraseArray.join('')}."`;
+
 
 //This function checks whether the game has been won or lost by check if the number of letters with class “show” 
 //is equal to the number of letters with class “letters”. //
@@ -72,6 +71,8 @@ function checkWin() {
     let numShow = document.querySelectorAll('.show').length;
     let numLetter = document.querySelectorAll('.letter').length;
     const title = document.querySelector('.title');
+    let winingPhrase = document.createElement('h2');
+    winingPhrase.textContent = `The phrase was "${phraseArray.join('')}."`;
     
     if (numShow === numLetter) {
         setTimeout(function () {
@@ -117,20 +118,20 @@ for (let i= 0; i < keyboardBtns.length; i++) {
 
 //This function resets the game either player win or lose.//
 function reset() {
-    keyboardBtns.addEventListener('click', () => {
+    btnReset.addEventListener('click', () => {
         missed = 0;
         for (let i= 0; i < keyboardBtns.length; i++) {
             keyboardBtns[i].className = '';
-            keyboardBtns[i].disabled = false;
+            keyboardBtns[i].disabled = '';
         }
         for (let i= 0; i < heartsImg.length; i++) {
             heartsImg[i].src = 'images/liveHeart.png';
         }
         overlay.removeChild(overlay.lastChild);
-        winingPhrase.textContent = '';
         const ul = document.querySelector('#phrase ul'); 
         ul.innerHTML = '';
         phraseArray = getRandomPhraseAsArray(phrases);
         addPhraseToDisplay(phraseArray);
+        
     });    
 }
