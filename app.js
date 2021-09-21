@@ -1,9 +1,8 @@
-const qwerty = document.getElementById('qwerty');
-const phrase = document.getElementById('phrase');
 let missed = 0;
 const btnReset = document.querySelector('.btn__reset');
 const keyboardBtns = document.querySelectorAll('.keyrow button');
 const heartsImg = document.querySelectorAll('.tries img');
+const overlay = document.getElementById('overlay');
 
 //Starts the game. Hides the start screen when button is clicked.//
 btnReset.addEventListener('click', () => {
@@ -32,7 +31,7 @@ function getRandomPhraseAsArray(arr) {
 //This function append each item from the new array into a li element in the #phrase ul
 //only when the character is not a space, and then gives it the class 'letter'. Otherwise the character receives the class 'space'. 
 function addPhraseToDisplay(arr) {
-    for (i= 0; i < arr.length; i++ ) {
+    for (let i= 0; i < arr.length; i++ ) {
        const character = arr[i];
        const ul = document.querySelector('#phrase ul');
        const li = document.createElement('li');
@@ -46,7 +45,7 @@ function addPhraseToDisplay(arr) {
        }
     }
   }
-const phraseArray = getRandomPhraseAsArray(phrases);
+let phraseArray = getRandomPhraseAsArray(phrases);
 addPhraseToDisplay(phraseArray);
 
 
@@ -56,14 +55,16 @@ function checkLetter(playerGuess) {
     const letters = document.getElementsByClassName('letter');
     let correctAnswer = null;
 
-    for (i= 0; i < letters.length; i++)
+    for (let i= 0; i < letters.length; i++)
         if (playerGuess === letters[i].innerText.toLowerCase()) {
             letters[i].className = 'letter show';
             correctAnswer = letters[i].innerText;
         } 
-    return correctAnswer
+    return correctAnswer;
 }
 
+let winingPhrase = document.createElement('h2');
+winingPhrase.textContent = `The phrase was "${phraseArray.join('')}."`;
 
 //This function checks whether the game has been won or lost by check if the number of letters with class “show” 
 //is equal to the number of letters with class “letters”. //
@@ -71,30 +72,33 @@ function checkWin() {
     let numShow = document.querySelectorAll('.show').length;
     let numLetter = document.querySelectorAll('.letter').length;
     const title = document.querySelector('.title');
-    const winingPhrase = document.createElement('h2');
-    winingPhrase.textContent = `The phrase was "${phraseArray.join('')}."`
-
+    
     if (numShow === numLetter) {
-        
-        overlay.style.display = '';
-        overlay.className = 'win';
-        title.textContent = 'Congrats! You win';
-        btnReset.innerText = 'Play again';
-        overlay.appendChild(winingPhrase);
+        setTimeout(function () {
+            overlay.style.display = '';
+            overlay.className = 'win';
+            title.textContent = 'Congrats! You win';
+            btnReset.innerText = 'Play again';
+            overlay.appendChild(winingPhrase);
+            reset();
+        }, 1000);
     }
     if (missed >= 5) {
-        overlay.style.display = '';
-        overlay.className = 'lose';
-        title.textContent = 'Bummer! You lose';
-        btnReset.innerText = 'Try again';
-        overlay.appendChild(winingPhrase);
+        setTimeout(function () {
+            overlay.style.display = '';
+            overlay.className = 'lose';
+            title.textContent = 'Bummer! You lose';
+            btnReset.innerText = 'Try again';
+            overlay.appendChild(winingPhrase);
+            reset();
+        }, 500);
     }
 }
 
 
 //This event handler listen only to button events from the keyboard. When a player chooses a letter, 
 //adds the “chosen” class to that button so the same letter can’t be chosen twice.//
-for (i= 0; i < keyboardBtns.length; i++) {
+for (let i= 0; i < keyboardBtns.length; i++) {
     keyboardBtns[i].addEventListener('click', (e) => {
         let playerGuess = e.target.innerText;
         checkLetter(playerGuess);
@@ -110,3 +114,23 @@ for (i= 0; i < keyboardBtns.length; i++) {
     });
 }
 
+
+//This function resets the game either player win or lose.//
+function reset() {
+    keyboardBtns.addEventListener('click', () => {
+        missed = 0;
+        for (let i= 0; i < keyboardBtns.length; i++) {
+            keyboardBtns[i].className = '';
+            keyboardBtns[i].disabled = false;
+        }
+        for (let i= 0; i < heartsImg.length; i++) {
+            heartsImg[i].src = 'images/liveHeart.png';
+        }
+        overlay.removeChild(overlay.lastChild);
+        winingPhrase.textContent = '';
+        const ul = document.querySelector('#phrase ul'); 
+        ul.innerHTML = '';
+        phraseArray = getRandomPhraseAsArray(phrases);
+        addPhraseToDisplay(phraseArray);
+    });    
+}
