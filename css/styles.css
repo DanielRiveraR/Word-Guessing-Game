@@ -95,6 +95,9 @@ button {
 .show {
   color: #000;
   background-color: #76CE82;
+  transition-delay: 0s;
+  transition-duration: 2s;
+  transition-property: var(--color-keys-light);
 }
 
 /* Keyboard */

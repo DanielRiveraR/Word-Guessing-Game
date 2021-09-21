@@ -53,7 +53,7 @@ addPhraseToDisplay(phraseArray);
 //This function gets all of the elements with a class of 'letter', loops over them,  and check if they match the letter in the button the player has chosen.
 //If a match wasn’t found, the function return null.//
 function checkLetter(playerGuess) {
-    const letters = document.getElementsByClassName('.letter');
+    const letters = document.getElementsByClassName('letter');
     let correctAnswer = null;
 
     for (i= 0; i < letters.length; i++)
